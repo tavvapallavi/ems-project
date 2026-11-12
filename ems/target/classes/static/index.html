@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Employee Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --indigo:#3f51b5; --orange:#ff9800; --bg:#f4f4f4; --ink:#212121; --muted:#616161; --line:#e0e0e0; --danger:#e53935; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Poppins,system-ui,"Segoe UI",sans-serif; background:var(--bg); color:var(--ink); }
+  nav { background:var(--indigo); color:#fff; display:flex; align-items:center; justify-content:space-between;
+        flex-wrap:wrap; gap:8px; padding:10px 24px; box-shadow:0 2px 6px rgba(0,0,0,.25); }
+  nav .brand { font-size:1.4rem; font-weight:600; }
+  nav ul { list-style:none; display:flex; flex-wrap:wrap; gap:6px 22px; margin:0; padding:0; }
+  nav a { color:#fff; text-decoration:none; text-transform:uppercase; font-size:.9rem; font-weight:500; padding:4px 0; }
+  nav a.active { color:var(--orange); }
+  nav a.logout { color:#ff1744; }
+  nav a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline:2px solid var(--orange); outline-offset:2px; }
+  main { max-width:1100px; margin:0 auto; padding:32px 20px 60px; }
+  .hero { background:var(--indigo); color:#fff; text-align:center; border-radius:6px; padding:40px 24px 44px; box-shadow:0 2px 6px rgba(0,0,0,.2); }
+  .hero h1 { margin:0 0 12px; font-size:2.6rem; line-height:1.2; }
+  .hero p { margin:0 0 28px; font-size:1.2rem; }
+  .btn { display:inline-block; font:inherit; font-weight:500; text-transform:uppercase; font-size:.85rem; text-decoration:none;
+         background:var(--indigo); color:#fff; border:0; border-radius:4px; padding:10px 20px; cursor:pointer; }
+  .btn.orange { background:var(--orange); }
+  .btn.light { background:#fff; color:var(--ink); border:1px solid var(--line); }
+  .btn.red { background:var(--danger); }
+  .btn.sm { padding:5px 12px; font-size:.75rem; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:24px; margin-top:36px; }
+  .card { background:#fff; border-radius:6px; padding:20px; box-shadow:0 1px 4px rgba(0,0,0,.12); }
+  .card h2, .card h3 { color:var(--indigo); margin:0 0 10px; font-size:1.3rem; }
+  .card p { margin:0 0 18px; color:var(--ink); }
+  h1.page { color:var(--indigo); margin:0 0 20px; font-size:1.7rem; }
+  .stat { font-size:2rem; font-weight:600; color:var(--indigo); }
+  .stat-label { color:var(--muted); font-size:.9rem; }
+  .bar-row { display:flex; align-items:center; gap:10px; margin:8px 0; font-size:.9rem; }
+  .bar-row span:first-child { width:130px; }
+  .bar { background:var(--orange); height:16px; border-radius:3px; min-width:4px; }
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:.9rem; background:#fff; }
+  th { background:var(--indigo); color:#fff; text-align:left; padding:10px; font-weight:500; white-space:nowrap; }
+  td { padding:10px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  td.act { display:flex; gap:6px; }
+  label { display:block; font-size:.85rem; color:var(--muted); margin:12px 0 4px; }
+  input, select { width:100%; padding:9px 10px; border:1px solid #bdbdbd; border-radius:4px; font:inherit; background:#fff; }
+  .form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:0 18px; }
+  .toolbar { display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+  .toolbar input { flex:1; min-width:200px; }
+  .narrow { max-width:420px; margin:0 auto; }
+  #msg { margin:0 0 16px; padding:10px 14px; border-radius:4px; display:none; }
+  #msg.ok { display:block; background:#e8f5e9; color:#1b5e20; }
+  #msg.error { display:block; background:#ffebee; color:#b71c1c; }
+  .empty { color:var(--muted); padding:16px 0; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:28px; margin-bottom:28px; }
+  .stats .card { text-align:center; padding:24px 12px; }
+  .stats .card h3 { color:var(--ink); font-weight:500; font-size:1.2rem; margin-bottom:6px; }
+  .stats .num { font-size:2.4rem; font-weight:400; }
+  .charts { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:28px; }
+  .chart-box { position:relative; height:260px; }
+  footer { background:var(--indigo); color:#fff; padding:36px 24px; }
+  .fgrid { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:32px; }
+  footer h3 { margin:0 0 14px; font-size:1.3rem; }
+  footer p { margin:0; line-height:1.7; }
+  footer ul { list-style:none; margin:0; padding:0; }
+  footer li { margin-bottom:8px; }
+  footer a { color:#fff; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<nav>
+  <div class="brand">Employee Management System</div>
+  <ul id="menu"></ul>
+</nav>
+<main>
+  <div id="msg" role="status"></div>
+  <div id="view"></div>
+</main>
+<footer>
+  <div class="fgrid">
+    <div><h3>About Us</h3><p>We provide a comprehensive Employee Management System that helps you manage your employees and departments with ease. Our mission is to make HR processes seamless and efficient.</p></div>
+    <div><h3>Quick Links</h3><ul>
+      <li><a href="#home">Home</a></li><li><a href="#dashboard">Dashboard</a></li><li><a href="#employees">Employees</a></li>
+      <li><a href="#departments">Departments</a></li><li><a href="#profile">Profile</a></li><li><a href="#login">Login</a></li></ul></div>
+    <div><h3>Contact Us</h3><p>Project Maintainer: Tavva Pallavi<br>Email: <a href="mailto:pallavireddytavva@gmail.com">pallavireddytavva@gmail.com</a></p></div>
+  </div>
+</footer>
+
+<script>
+const API = '/api';
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const getUser = () => { try { return JSON.parse(sessionStorage.getItem('user')); } catch (e) { return null; } };
+
+function notify(text, type) { const m = $('msg'); m.textContent = text || ''; m.className = text ? type : ''; }
+
+async function request(url, options) {
+  const res = await fetch(url, options);
+  if (!res.ok) {
+    let message = 'Request failed (' + res.status + ')';
+    try { message = (await res.json()).message || message; } catch (e) {}
+    throw new Error(message);
+  }
+  return res.status === 204 ? null : res.json();
+}
+const send = (method, url, body) => request(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+
+/* ---------- navigation ---------- */
+function renderMenu(route) {
+  const items = [['home','Home'],['dashboard','Dashboard'],['employees','Employees'],['departments','Departments'],['profile','Profile']];
+  items.push(getUser() ? ['logout','Logout'] : ['login','Login']);
+  items.push(['register','Register']);
+  $('menu').innerHTML = items.map(([r, label]) =>
+    `<li><a href="#${r}" class="${r === route ? 'active' : ''} ${r === 'logout' ? 'logout' : ''}">${label}</a></li>`).join('');
+}
+
+const routes = { home, dashboard, employees, departments, profile, login, register };
+const protectedRoutes = ['dashboard', 'employees', 'departments', 'profile'];
+
+async function router() {
+  notify('');
+  let route = location.hash.slice(1) || 'home';
+  if (route === 'logout') { sessionStorage.removeItem('user'); location.hash = '#login'; return; }
+  if (!routes[route]) route = 'home';
+  if (protectedRoutes.includes(route) && !getUser()) { location.hash = '#login'; return; }
+  renderMenu(route);
+  try { await routes[route](); } catch (e) { notify(e.message, 'error'); }
+}
+window.addEventListener('hashchange', router);
+
+/* ---------- views ---------- */
+function home() {
+  $('view').innerHTML = `
+    <section class="hero">
+      <h1>Welcome to Employee Management System</h1>
+      <p>A centralized solution for managing all your employee data efficiently and effectively.</p>
+      <a class="btn orange" href="#dashboard">Go to Dashboard</a>
+    </section>
+    <div class="grid">
+      <div class="card"><h2>Manage Employees</h2><p>Easily manage your employee records, track details, and maintain an up-to-date roster.</p><a class="btn" href="#employees">View Employees</a></div>
+      <div class="card"><h2>Track Departments</h2><p>Organize your company’s structure with detailed information on each department.</p><a class="btn" href="#departments">View Departments</a></div>
+      <div class="card"><h2>Analyze Growth</h2><p>Use our dashboard to analyze employee counts and organizational structure.</p><a class="btn" href="#dashboard">Go to Dashboard</a></div>
+    </div>`;
+}
+
+async function dashboard() {
+  const [emps, depts] = await Promise.all([request(API + '/employees'), request(API + '/departments')]);
+  const now = new Date();
+  const ages = emps.filter((e) => e.dateOfBirth).map((e) => Math.floor((now - new Date(e.dateOfBirth)) / 31557600000));
+  const avgAge = ages.length ? (ages.reduce((a, b) => a + b, 0) / ages.length).toFixed(1) : '0';
+  const buckets = [0, 0, 0, 0, 0];
+  ages.forEach((a) => buckets[a < 30 ? 0 : a < 40 ? 1 : a < 50 ? 2 : a < 60 ? 3 : 4]++);
+  const tally = (key, options) => options.map((o) => emps.filter((e) => e[key] === o).length);
+  const ends = [5, 4, 3, 2, 1, 0].map((i) => new Date(now.getFullYear(), now.getMonth() - i + 1, 0));
+  const monthLabels = ends.map((d) => d.toLocaleString('default', { month: 'long' }));
+  const growth = ends.map((d) => emps.filter((e) => e.joiningDate && new Date(e.joiningDate) <= d).length);
+  const card = (title, id) => `<div class="card"><h3>${title}</h3><div class="chart-box"><canvas id="${id}"></canvas></div></div>`;
+
+  $('view').innerHTML = `
+    <h1 class="page" style="text-align:center">Overview Dashboard</h1>
+    <div class="stats">
+      <div class="card"><h3>Total Employees</h3><div class="num">${emps.length}</div></div>
+      <div class="card"><h3>Average Age</h3><div class="num">${avgAge}</div></div>
+      <div class="card"><h3>Total Departments</h3><div class="num">${depts.length}</div></div>
+    </div>
+    <div class="charts">
+      ${card('Total Overview', 'c1')}${card('Employee Count by Age Range', 'c2')}${card('Employee Growth Over Time', 'c3')}
+      ${card('Average Age of Employees', 'c4')}${card('Age Range Distribution', 'c5')}${card('Employee Growth Trend', 'c6')}
+      ${card('Gender Distribution', 'c7')}${card('Job Satisfaction Levels', 'c8')}${card('Remote Work Preference', 'c9')}
+    </div>`;
+
+  if (typeof Chart === 'undefined') { notify('Charts could not load. Check your internet connection.', 'error'); return; }
+  const C = { indigo: '#3f51b5', orange: '#ff9800', pink: '#ff6384', blue: '#36a2eb', yellow: '#ffce56', teal: '#4bc0c0', purple: '#9966ff', green: '#8bc34a', red: '#ff7043' };
+  const make = (id, type, labels, data, label, colors) => new Chart($(id), {
+    type, data: { labels, datasets: [{ label, data, backgroundColor: colors, borderColor: type === 'line' ? colors : '#fff', tension: 0.3, fill: false }] },
+    options: { responsive: true, maintainAspectRatio: false,
+      scales: type === 'pie' ? {} : { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+  });
+  const ageLabels = ['Under 30', '30-39', '40-49', '50-59', '60+'];
+  const ageColors = [C.pink, C.blue, C.yellow, C.teal, C.purple];
+  make('c1', 'bar', ['Employees', 'Departments'], [emps.length, depts.length], 'Total Count', [C.indigo, C.orange]);
+  make('c2', 'bar', ageLabels, buckets, 'Employees per Age Range', ageColors);
+  make('c3', 'bar', monthLabels, growth, 'Employee Growth Over Time', C.blue);
+  make('c4', 'bar', ['Average Age'], [Number(avgAge)], 'Average Age of Employees', C.green);
+  make('c5', 'pie', ageLabels, buckets, 'Age Range', ageColors);
+  make('c6', 'line', monthLabels, growth, 'Employee Growth Trend', C.pink);
+  make('c7', 'bar', ['Male', 'Female', 'Other'], tally('gender', ['Male', 'Female', 'Other']), 'Gender Distribution', [C.blue, C.red, C.purple]);
+  make('c8', 'pie', ['Satisfied', 'Neutral', 'Dissatisfied'], tally('satisfaction', ['Satisfied', 'Neutral', 'Dissatisfied']), 'Job Satisfaction', ['#81c784', '#ffeb3b', C.red]);
+  make('c9', 'pie', ['Onsite', 'Remote', 'Hybrid'], tally('workMode', ['Onsite', 'Remote', 'Hybrid']), 'Work Mode', ['#4fc3f7', '#ffb74d', '#9575cd']);
+}
+
+async function employees() {
+  const depts = await request(API + '/departments');
+  $('view').innerHTML = `
+    <h1 class="page">Employees</h1>
+    <div class="card" style="margin-bottom:24px">
+      <h3 id="ftitle">Add employee</h3>
+      <form id="eform" novalidate><input type="hidden" id="eid">
+        <div class="form-grid">
+          <div><label for="fn">First name</label><input id="fn"></div>
+          <div><label for="ln">Last name</label><input id="ln"></div>
+          <div><label for="em">Email</label><input id="em" type="email"></div>
+          <div><label for="ds">Designation</label><input id="ds"></div>
+          <div><label for="sa">Salary</label><input id="sa" type="number" min="0" step="0.01"></div>
+          <div><label for="jd">Joining date</label><input id="jd" type="date"></div>
+          <div><label for="dob">Date of birth</label><input id="dob" type="date"></div>
+          <div><label for="gd">Gender</label><select id="gd"><option value="">Not specified</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+          <div><label for="wm">Work mode</label><select id="wm"><option value="">Not specified</option><option>Onsite</option><option>Remote</option><option>Hybrid</option></select></div>
+          <div><label for="st">Job satisfaction</label><select id="st"><option value="">Not specified</option><option>Satisfied</option><option>Neutral</option><option>Dissatisfied</option></select></div>
+          <div><label for="dp">Department</label><select id="dp"><option value="">No department</option>${depts.map((d) => `<option value="${d.id}">${esc(d.name)}</option>`).join('')}</select></div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:8px"><button class="btn" id="save">Save employee</button><button type="button" class="btn light" id="cancel" hidden>Cancel edit</button></div>
+      </form>
+    </div>
+    <div class="toolbar"><input id="q" type="search" placeholder="Search by first or last name" aria-label="Search employees"></div>
+    <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Designation</th><th>Department</th><th>Salary</th><th>Joined</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+    <div id="none" class="empty" hidden>No employees found.</div>`;
+
+  let list = [];
+  const reset = () => { $('eform').reset(); $('eid').value = ''; $('ftitle').textContent = 'Add employee'; $('save').textContent = 'Save employee'; $('cancel').hidden = true; };
+  async function load() {
+    const t = $('q').value.trim();
+    list = await request(API + '/employees' + (t ? '?search=' + encodeURIComponent(t) : ''));
+    $('none').hidden = list.length > 0;
+    $('rows').innerHTML = list.map((e) => `<tr><td>${esc(e.firstName)} ${esc(e.lastName)}</td><td>${esc(e.email)}</td><td>${esc(e.designation || '-')}</td>
+      <td>${esc(e.department ? e.department.name : '-')}</td><td>${e.salary != null ? Number(e.salary).toLocaleString() : '-'}</td><td>${esc(e.joiningDate || '-')}</td>
+      <td class="act"><button class="btn sm" data-edit="${e.id}">Edit</button><button class="btn sm red" data-del="${e.id}">Delete</button></td></tr>`).join('');
+  }
+  $('rows').addEventListener('click', async (ev) => {
+    const edit = ev.target.dataset.edit, del = ev.target.dataset.del;
+    if (edit) {
+      const e = list.find((x) => x.id == edit);
+      $('ftitle').textContent = 'Edit employee'; $('eid').value = e.id; $('fn').value = e.firstName; $('ln').value = e.lastName; $('em').value = e.email;
+      $('ds').value = e.designation || ''; $('sa').value = e.salary ?? ''; $('jd').value = e.joiningDate || ''; $('dp').value = e.department ? e.department.id : ''; $('dob').value = e.dateOfBirth || ''; $('gd').value = e.gender || ''; $('wm').value = e.workMode || ''; $('st').value = e.satisfaction || '';
+      $('save').textContent = 'Update employee'; $('cancel').hidden = false; $('fn').focus();
+    }
+    if (del && confirm('Delete this employee?')) {
+      try { await request(API + '/employees/' + del, { method: 'DELETE' }); notify('Employee deleted', 'ok'); load(); } catch (e) { notify(e.message, 'error'); }
+    }
+  });
+  $('cancel').onclick = reset;
+  let timer; $('q').oninput = () => { clearTimeout(timer); timer = setTimeout(load, 250); };
+  $('eform').onsubmit = async (ev) => {
+    ev.preventDefault();
+    const id = $('eid').value;
+    const body = { firstName: $('fn').value.trim(), lastName: $('ln').value.trim(), email: $('em').value.trim(), designation: $('ds').value.trim(),
+      salary: $('sa').value === '' ? null : Number($('sa').value), joiningDate: $('jd').value || null, dateOfBirth: $('dob').value || null, gender: $('gd').value || null, workMode: $('wm').value || null, satisfaction: $('st').value || null, department: $('dp').value ? { id: Number($('dp').value) } : null };
+    try { await send(id ? 'PUT' : 'POST', API + '/employees' + (id ? '/' + id : ''), body); notify(id ? 'Employee updated' : 'Employee added', 'ok'); reset(); load(); }
+    catch (e) { notify(e.message, 'error'); }
+  };
+  load();
+}
+
+async function departments() {
+  $('view').innerHTML = `
+    <h1 class="page">Departments</h1>
+    <div class="card" style="margin-bottom:24px"><h3 id="dtitle">Add department</h3>
+      <form id="dform" class="toolbar" style="margin:0"><input type="hidden" id="did"><input id="dname" placeholder="Department name" aria-label="Department name">
+        <button class="btn" id="dsave">Save</button><button type="button" class="btn light" id="dcancel" hidden>Cancel</button></form></div>
+    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th></th></tr></thead><tbody id="drows"></tbody></table></div>
+    <div id="dnone" class="empty" hidden>No departments yet. Add one above.</div>`;
+  let list = [];
+  const reset = () => { $('did').value = ''; $('dname').value = ''; $('dtitle').textContent = 'Add department'; $('dcancel').hidden = true; };
+  async function load() {
+    list = await request(API + '/departments');
+    $('dnone').hidden = list.length > 0;
+    $('drows').innerHTML = list.map((d) => `<tr><td>${d.id}</td><td>${esc(d.name)}</td><td class="act"><button class="btn sm" data-edit="${d.id}">Edit</button><button class="btn sm red" data-del="${d.id}">Delete</button></td></tr>`).join('');
+  }
+  $('drows').addEventListener('click', async (ev) => {
+    const edit = ev.target.dataset.edit, del = ev.target.dataset.del;
+    if (edit) { const d = list.find((x) => x.id == edit); $('did').value = d.id; $('dname').value = d.name; $('dtitle').textContent = 'Edit department'; $('dcancel').hidden = false; $('dname').focus(); }
+    if (del && confirm('Delete this department?')) {
+      try { await request(API + '/departments/' + del, { method: 'DELETE' }); notify('Department deleted', 'ok'); load(); } catch (e) { notify(e.message, 'error'); }
+    }
+  });
+  $('dcancel').onclick = reset;
+  $('dform').onsubmit = async (ev) => {
+    ev.preventDefault();
+    const id = $('did').value;
+    try { await send(id ? 'PUT' : 'POST', API + '/departments' + (id ? '/' + id : ''), { name: $('dname').value.trim() }); notify(id ? 'Department updated' : 'Department added', 'ok'); reset(); load(); }
+    catch (e) { notify(e.message, 'error'); }
+  };
+  load();
+}
+
+function profile() {
+  const u = getUser();
+  $('view').innerHTML = `<h1 class="page">Profile</h1><div class="card narrow"><label>Name</label><p>${esc(u.name)}</p><label>Email</label><p>${esc(u.email)}</p><a class="btn red" href="#logout">Logout</a></div>`;
+}
+
+function authForm(kind) {
+  const reg = kind === 'register';
+  $('view').innerHTML = `<div class="card narrow"><h2>${reg ? 'Create account' : 'Login'}</h2><form id="aform" novalidate>
+    ${reg ? '<label for="an">Name</label><input id="an" autocomplete="name">' : ''}
+    <label for="ae">Email</label><input id="ae" type="email" autocomplete="email">
+    <label for="ap">Password</label><input id="ap" type="password" autocomplete="${reg ? 'new-password' : 'current-password'}">
+    <div style="margin-top:18px"><button class="btn">${reg ? 'Register' : 'Login'}</button></div></form></div>`;
+  $('aform').onsubmit = async (ev) => {
+    ev.preventDefault();
+    try {
+      if (reg) {
+        await send('POST', API + '/auth/register', { name: $('an').value.trim(), email: $('ae').value.trim(), password: $('ap').value });
+        location.hash = '#login'; setTimeout(() => notify('Account created. Please log in.', 'ok'), 50);
+      } else {
+        const user = await send('POST', API + '/auth/login', { email: $('ae').value.trim(), password: $('ap').value });
+        sessionStorage.setItem('user', JSON.stringify(user)); location.hash = '#dashboard';
+      }
+    } catch (e) { notify(e.message, 'error'); }
+  };
+}
+function login() { authForm('login'); }
+function register() { authForm('register'); }
+
+router();
+</script>
+</body>
+</html>

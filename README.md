@@ -50,7 +50,7 @@ ems/
    http://localhost:8080
    ```
 
-Images:"C:\Users\palla\OneDrive\Pictures\Screenshots\Screenshot 2026-11-12 191600.png"
+Image:<img width="1884" height="866" alt="Screenshot 2026-11-12 191600" src="https://github.com/user-attachments/assets/dfbb5c52-d6e1-4a34-8522-57266d2cf55a" />
+<img width="1793" height="852" alt="Screenshot 2026-11-12 191614" src="https://github.com/user-attachments/assets/1f177201-e123-4d83-b037-6c1f61ea6a70" />
 
-## License
-This project is created for educational purposes.
+
